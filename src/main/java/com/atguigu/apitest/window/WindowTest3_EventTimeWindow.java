@@ -15,6 +15,7 @@ public class WindowTest3_EventTimeWindow {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+        env.getConfig().setAutoWatermarkInterval(100);
         // 从socket文本流获取数据
         DataStream<String> inputStream = env.socketTextStream("36.134.134.186", 7777);
 
