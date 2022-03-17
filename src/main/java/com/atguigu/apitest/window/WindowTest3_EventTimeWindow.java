@@ -3,13 +3,11 @@ package com.atguigu.apitest.window;
 import com.atguigu.apitest.beans.SensorReading;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.time.Time;
-
-import javax.xml.crypto.Data;
+import org.apache.flink.util.OutputTag;
 
 /**
  * Description TODO
@@ -37,13 +35,21 @@ public class WindowTest3_EventTimeWindow {
                         return element.getTimestamp() * 1000L;
                     }
                 });
+        // 侧输出流
+        OutputTag<SensorReading> outputTag = new OutputTag<SensorReading>("late") {
+
+        };
+
         // 基于事件时间的开窗聚合，统计15秒内温度的最小值
         SingleOutputStreamOperator<SensorReading> minTempStream = dataStream.keyBy("id")
                 .timeWindow(Time.seconds(15))
+                .allowedLateness(Time.minutes(1)) // 允许延迟1分钟
+                .sideOutputLateData(outputTag)
                 .minBy("temperature");
 
 
-        minTempStream.print("min");
+        minTempStream.print("minTemp");
+        minTempStream.getSideOutput(outputTag).print("late");
         env.execute();
 
     }
