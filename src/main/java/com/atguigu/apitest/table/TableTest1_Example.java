@@ -13,7 +13,7 @@ import org.apache.flink.types.Row;
  * Author zhoutong
  * Date 2022/3/23 18:22
  **/
-public class TableTest2 {
+public class TableTest1_Example {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
